@@ -4,9 +4,11 @@ import './App.css';
 function App() {
   const [selectedTile, setSelectedTile] = useState(0)
   const [clickedTile, setClickedTile] = useState()
+  const [gameSpeed, setGameSpeed] = useState(550)
   const [score, setScore] = useState(0)
   const [gameOver, setGameOver] = useState(false)
   const [isFirstRun, setIsFirstRun] = useState(true)
+  const [isRetry, setIsRetry] = useState(false)
 
   useEffect(() => {
     if(!gameOver) {
@@ -20,13 +22,21 @@ function App() {
         } else{
           setSelectedTile(-1)
         }
-      }, 550)
+      }, gameSpeed)
       const currentTile = document.getElementById(`innerBox${selectedTile + 1}`)
       currentTile.classList.add("selectedTile", setTimeout(() => {
         currentTile.classList.remove("selectedTile")
-      }, 550))
+      }, gameSpeed))
     } 
   }, [selectedTile, gameOver])
+
+  useEffect(() => {
+    if(!isRetry) {
+      setGameSpeed(gameSpeed - 1)
+    } else{
+      setGameSpeed(550)
+    }
+  }, [score])
 
   useEffect(() => {
     if(selectedTile === clickedTile) {
@@ -45,6 +55,7 @@ function App() {
       let currentTile = document.getElementById(`innerBox${i + 1}`)
       currentTile.classList.remove("incorrectTileClicked")
     }
+    setIsRetry(true)
     setScore(0)
   }
 
@@ -56,7 +67,7 @@ function App() {
     const correctTile = document.getElementById(`innerBox${tile + 1}`)
     correctTile.classList.add("correctTileClicked", setTimeout(() => {
       correctTile.classList.remove("correctTileClicked")
-    }, 500))
+    }, gameSpeed - 20))
   }
 
   function incorrectTileClicked(tile) {
@@ -66,8 +77,8 @@ function App() {
         let currentTile = document.getElementById(`innerBox${i + 1}`)
         currentTile.classList.add("incorrectTileClicked")
       }
-      setGameOver(true)
-    }, 500))
+    }, gameSpeed - 20))
+    setGameOver(true)
   }
 
   return (
@@ -92,6 +103,7 @@ function App() {
       </div>
       <p>{selectedTile}</p>
       <p>{clickedTile}</p>
+      <p>Game Speed: {gameSpeed}</p>
       <p>Player's Score: {score}</p>
       <button onClick={retry}>Retry</button>
     </div>
